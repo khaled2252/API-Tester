@@ -1,7 +1,7 @@
-package com.khaled.apitester.utils
+package com.khaled.apitester.util
 
 import android.util.Log
-import com.khaled.apitester.ApiCallModel
+import com.khaled.apitester.model.ApiCallModel
 import org.json.JSONObject
 import java.io.*
 import java.net.URL
@@ -18,7 +18,7 @@ object HttpUtils {
         file: File? = null,
         onResponse: (ApiCallModel) -> Unit
     ) {
-        val currentSystemTime = System.currentTimeMillis().toInt()
+        val systemTimeBeforeExecution = System.currentTimeMillis()
 
         try {
             val connection = URL(url).openConnection() as HttpsURLConnection
@@ -82,7 +82,7 @@ object HttpUtils {
                             println(">>>> Response: $response")
                             onResponse(
                                 ApiCallModel(
-                                    dateInMillis = currentSystemTime,
+                                    dateInMillis = systemTimeBeforeExecution,
                                     requestUrl = url,
                                     requestMethod = method,
                                     requestHeaders = headers,
@@ -96,7 +96,8 @@ object HttpUtils {
                                     responseMessage = connection.responseMessage,
                                     responseHeaders = connection.headerFields,
                                     responseBody = response.toString(),
-                                    responseError = null
+                                    responseError = null,
+                                    executionTime = System.currentTimeMillis() - systemTimeBeforeExecution
                                 )
                             )
                         }
@@ -113,7 +114,7 @@ object HttpUtils {
                             println(">>>> Error: $error")
                             onResponse(
                                 ApiCallModel(
-                                    dateInMillis = currentSystemTime,
+                                    dateInMillis = systemTimeBeforeExecution,
                                     requestUrl = url,
                                     requestMethod = method,
                                     requestHeaders = headers,
@@ -127,7 +128,8 @@ object HttpUtils {
                                     responseMessage = connection.responseMessage,
                                     responseHeaders = connection.headerFields,
                                     responseBody = null,
-                                    responseError = error.toString()
+                                    responseError = error.toString(),
+                                    executionTime = System.currentTimeMillis() - systemTimeBeforeExecution
                                 )
                             )
                         }
@@ -135,7 +137,7 @@ object HttpUtils {
                 Log.e(null, e.stackTraceToString())
                 onResponse(
                     ApiCallModel(
-                        dateInMillis = currentSystemTime,
+                        dateInMillis = systemTimeBeforeExecution,
                         requestUrl = url,
                         requestMethod = method,
                         requestHeaders = headers,
@@ -145,7 +147,8 @@ object HttpUtils {
                             val split = it.split("=")
                             split[0] to split[1]
                         },
-                        responseError = e.message
+                        responseError = e.message,
+                        executionTime = System.currentTimeMillis() - systemTimeBeforeExecution
                     )
                 )
             } finally {
@@ -155,7 +158,7 @@ object HttpUtils {
             Log.e(null, e.stackTraceToString())
             onResponse(
                 ApiCallModel(
-                    dateInMillis = currentSystemTime,
+                    dateInMillis = systemTimeBeforeExecution,
                     requestUrl = url,
                     requestMethod = method,
                     requestHeaders = headers,

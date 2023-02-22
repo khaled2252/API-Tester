@@ -1,6 +1,6 @@
-package com.khaled.apitester
+package com.khaled.apitester.model
 
-import com.khaled.apitester.utils.HttpUtils
+import com.khaled.apitester.util.HttpUtils
 import org.json.JSONObject
 import java.io.File
 
@@ -10,7 +10,7 @@ import java.io.File
  */
 
 data class ApiCallModel(
-    val dateInMillis : Int,
+    val dateInMillis : Long,
 
     // region Request data
     val requestUrl: String,
@@ -26,6 +26,7 @@ data class ApiCallModel(
     val responseMessage: String? = null,
     val responseHeaders: Map<String?, List<String>>? = null,
     val responseBody: String? = null,
-    val responseError: String? = null
+    val responseError: String? = null,
+    val executionTime: Long? = null
     // endregion
 )

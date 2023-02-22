@@ -1,0 +1,68 @@
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="400dp"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RadioGroup
+        android:id="@+id/radio_group_sort_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radio_button_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by date" />
+
+        <RadioButton
+            android:id="@+id/radio_button_execution_time_asc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by execution time ascendingly" />
+
+        <RadioButton
+            android:id="@+id/radio_button_execution_time_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by execution time descendingly" />
+
+        <RadioButton
+            android:id="@+id/radio_button_get_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by GET requests" />
+
+        <RadioButton
+            android:id="@+id/radio_button_post_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by POST requests" />
+
+        <RadioButton
+            android:id="@+id/radio_button_success_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by SUCCESS requests" />
+
+        <RadioButton
+            android:id="@+id/radio_button_failure_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by FAILURE requests" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_dismiss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:text="Dismiss"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>

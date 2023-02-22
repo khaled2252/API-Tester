@@ -1,13 +1,15 @@
-package com.khaled.apitester
+package com.khaled.apitester.screen.main
 
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.khaled.apitester.utils.ContextUtils
-import com.khaled.apitester.utils.ContextUtils.isNetworkAvailable
-import com.khaled.apitester.utils.HttpUtils
+import com.khaled.apitester.model.ApiCallModel
+import com.khaled.apitester.util.ContextUtils.isNetworkAvailable
+import com.khaled.apitester.util.HttpUtils
+import com.khaled.apitester.util.SharedPrefsUtils
 import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.Executors
@@ -15,9 +17,12 @@ import java.util.concurrent.Executors
 // Using AndroidViewModel to access application context to check for internet connection
 class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
+    private val _selectedSort = MutableLiveData(SortOption.DATE)
+    internal val selectedSort: LiveData<SortOption> = _selectedSort
+
     fun getData() = MutableLiveData<List<ApiCallModel>>().apply {
         Executors.newSingleThreadExecutor().execute {
-            val newList = ContextUtils.SharedPrefs(app.applicationContext).getPreviousApiCalls()
+            val newList = SharedPrefsUtils(app.applicationContext).getPreviousApiCalls()
             Handler(Looper.getMainLooper()).post {
                 value = newList
             }
@@ -25,7 +30,7 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun addData() = MutableLiveData<List<ApiCallModel>>().apply {
-        val httpMethod = HttpUtils.HttpMethod.GET
+        val httpMethod = HttpUtils.HttpMethod.POST
         val url = "https://httpbin.org/get?name=khaled&age=25"
         val headers = mapOf<String?, String>(
             "Key1" to "value1",
@@ -41,8 +46,8 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             Executors.newSingleThreadExecutor().execute {
                 // Blocking call in a separate thread
                 HttpUtils.httpCall(httpMethod, url, headers, null, null) { apiCallModel ->
-                    ContextUtils.SharedPrefs(app.applicationContext).saveApiCallModel(apiCallModel)
-                    val newList = ContextUtils.SharedPrefs(app.applicationContext).getPreviousApiCalls()
+                    SharedPrefsUtils(app.applicationContext).saveApiCallModel(apiCallModel)
+                    val newList = SharedPrefsUtils(app.applicationContext).getPreviousApiCalls()
                     Handler(Looper.getMainLooper()).post {
                         // Update UI in main thread
                         value = newList
@@ -52,5 +57,19 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             }
         else
             value = null
+    }
+
+    fun setNewSort(newSortOption: SortOption) {
+        _selectedSort.value = newSortOption
+    }
+
+    enum class SortOption {
+        DATE,
+        EXECUTION_TIME_ASCENDING,
+        EXECUTION_TIME_DESCENDING,
+        GET_REQUESTS,
+        POST_REQUESTS,
+        SUCCESS_REQUESTS,
+        FAILURE_REQUESTS
     }
 }
