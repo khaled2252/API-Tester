@@ -1,22 +1,19 @@
 package com.khaled.apitester.screen.add
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.khaled.apitester.R
 import com.khaled.apitester.databinding.ActivityAddNewApiCallBinding
 import com.khaled.apitester.screen.details.ApiCallDetailsActivity
 import com.khaled.apitester.screen.main.MainActivity.Companion.IS_API_CALL_ADDED
+import com.khaled.apitester.util.HttpUtils
 import com.khaled.apitester.util.extension.makeFileFromUri
 
 
@@ -26,13 +23,14 @@ class AddNewApiCallActivity : AppCompatActivity() {
     private lateinit var viewModel: AddNewApiCallViewModel
 
     @SuppressLint("SetTextI18n")
-    private val getFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            val file = makeFileFromUri(uri)
-            binding.labelFile.text = "File: ${file.name}"
-            viewModel.currentFile = file
+    private val getFileLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                val file = makeFileFromUri(uri)
+                binding.labelFile.text = "File: ${file.name}"
+                viewModel.currentFile = file
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,9 +48,7 @@ class AddNewApiCallActivity : AppCompatActivity() {
                     inputLayoutJsonBody.visibility = View.INVISIBLE
                     labelFile.visibility = View.GONE
                     btnFileUpload.visibility = View.GONE
-                }
-                else
-                {
+                } else {
                     radioGroupBodyType.visibility = View.VISIBLE
                     handlePostRequestInputs(radioGroupBodyType.checkedRadioButtonId)
                 }
@@ -63,30 +59,19 @@ class AddNewApiCallActivity : AppCompatActivity() {
             }
 
             btnFileUpload.setOnClickListener {
-                if (ContextCompat.checkSelfPermission(this@AddNewApiCallActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this@AddNewApiCallActivity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
-                }
-
                 getFileLauncher.launch("*/*") //  "*/*" i.e. Allow all types of files
             }
 
             btnSubmit.setOnClickListener {
-                if (radioGroupRequestType.checkedRadioButtonId == R.id.radio_button_get) {
-                    viewModel.makeGetRequest(
-                        editTextUrl.text.toString(),
-                        editTextHeaders.text.toString()
-                    ).observe(this@AddNewApiCallActivity) { state ->
-                        handleRequestState(state)
-                    }
-                } else if (radioGroupRequestType.checkedRadioButtonId == R.id.radio_button_post) {
-                    viewModel.makePostRequest(
-                        editTextUrl.text.toString(),
-                        editTextHeaders.text.toString(),
-                        editTextJsonBody.text.toString(),
-                        isJson = radioGroupBodyType.checkedRadioButtonId == R.id.radio_button_json,
-                    ).observe(this@AddNewApiCallActivity) { state ->
-                        handleRequestState(state)
-                    }
+
+                viewModel.makeARequest(
+                    if (radioGroupRequestType.checkedRadioButtonId == R.id.radio_button_get) HttpUtils.HttpMethod.GET else HttpUtils.HttpMethod.POST,
+                    editTextUrl.text.toString(),
+                    editTextHeaders.text.toString(),
+                    editTextJsonBody.text.toString(),
+                    isJson = radioGroupBodyType.checkedRadioButtonId == R.id.radio_button_json
+                ).observe(this@AddNewApiCallActivity) { state ->
+                    handleRequestState(state)
                 }
 
             }

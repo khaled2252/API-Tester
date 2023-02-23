@@ -9,6 +9,7 @@ import com.khaled.apitester.util.BackgroundTaskUtils.doInBackground
 import com.khaled.apitester.util.HttpUtils
 import com.khaled.apitester.util.SharedPrefsUtils
 import com.khaled.apitester.util.extension.isNetworkAvailable
+import com.khaled.apitester.util.extension.toMap
 import java.io.File
 
 // Using AndroidViewModel to access application context to check for internet connection and access SharedPreferences
@@ -16,7 +17,13 @@ class AddNewApiCallViewModel(private val app: Application) : AndroidViewModel(ap
 
     var currentFile: File? = null
 
-    fun makeGetRequest(url: String, headers: String) =
+    fun makeARequest(
+        method: HttpUtils.HttpMethod,
+        url: String,
+        headers: String,
+        body: String?,
+        isJson: Boolean
+    ) =
         MutableLiveData<ViewState>().apply {
             if (app.applicationContext.isNetworkAvailable()) {
                 if (isValidUrl(url)) {
@@ -25,16 +32,12 @@ class AddNewApiCallViewModel(private val app: Application) : AndroidViewModel(ap
                     doInBackground(
                         task = {
                             HttpUtils.httpCall(
-                                HttpUtils.HttpMethod.GET,
+                                method,
                                 url,
-                                if (headers.isNotEmpty()) headers.split("\n").associate {
-                                    if (it.contains(" ")) {
-                                        val (key, value) = it.split(" ", limit = 2)
-                                        key to value
-                                    } else it to ""
-                                } else null,
-                                null,
-                                null) { apiCallModel ->
+                                headers.toMap(),
+                                if (method == HttpUtils.HttpMethod.GET) null else if (isJson) body else null,
+                                if (method == HttpUtils.HttpMethod.GET) null else if (isJson) null else currentFile
+                            ) { apiCallModel ->
                                 result = apiCallModel
                                 SharedPrefsUtils(app.applicationContext).addApiCallModel(
                                     apiCallModel
@@ -46,45 +49,7 @@ class AddNewApiCallViewModel(private val app: Application) : AndroidViewModel(ap
                         })
                 } else
                     value = ViewState.InvalidUrl
-            }
-            else
-                value = ViewState.NoInternet
-        }
-
-    fun makePostRequest(url: String, headers: String, body: String?, isJson: Boolean) =
-        MutableLiveData<ViewState>().apply {
-            if (app.applicationContext.isNetworkAvailable()) {
-                if (isValidUrl(url)) {
-                    value = ViewState.Loading
-                    var result: ApiCallModel? = null
-                    doInBackground(
-                        task = {
-                            HttpUtils.httpCall(
-                                HttpUtils.HttpMethod.POST,
-                                url,
-                                if (headers.isNotEmpty()) headers.split("\n").associate {
-                                    if (it.contains(" ")) {
-                                        val (key, value) = it.split(" ", limit = 2)
-                                        key to value
-                                    } else it to ""
-                                } else null,
-                                if (isJson) body else null,
-                                if (isJson) null else currentFile
-                            )
-                            { apiCallModel ->
-                                result = apiCallModel
-                                SharedPrefsUtils(app.applicationContext).addApiCallModel(
-                                    apiCallModel
-                                )
-                            }
-                        },
-                        onDone = {
-                            value = result?.let { ViewState.Finished(it) }
-                        })
-                } else
-                    value = ViewState.InvalidUrl
-            }
-            else
+            } else
                 value = ViewState.NoInternet
         }
 

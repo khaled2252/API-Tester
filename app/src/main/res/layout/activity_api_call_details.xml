@@ -47,6 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
             app:layout_constraintTop_toTopOf="@id/label_date"
             app:layout_constraintStart_toEndOf="@id/label_date"/>
 
@@ -64,6 +65,7 @@
             tools:text="https://example.com"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="0dp"
+            android:textIsSelectable="true"
             android:layout_marginStart="4dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/label_url"
@@ -82,6 +84,7 @@
             android:id="@+id/tv_request_method_type"
             tools:text="GET"
             android:layout_width="wrap_content"
+            android:textIsSelectable="true"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             app:layout_constraintTop_toTopOf="@id/label_request_method_type"
@@ -101,6 +104,7 @@
             tools:text="Key: Authorization Bearer Value: abc123"
             android:layout_width="0dp"
             android:layout_marginStart="4dp"
+            android:textIsSelectable="true"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/label_request_headers"
@@ -121,6 +125,7 @@
             android:layout_height="wrap_content"
             tools:text="Key: page Value: 1"
             android:layout_marginStart="4dp"
+            android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label_request_queries"
             app:layout_constraintTop_toTopOf="@id/label_request_queries" />
@@ -147,6 +152,7 @@
             tools:text="Body value"
             android:layout_marginStart="4dp"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/label_request_body"
             app:layout_constraintTop_toTopOf="@id/label_request_body" />
 
@@ -170,6 +176,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="Image.png"
+            android:textIsSelectable="true"
             android:layout_marginStart="4dp"
             app:layout_constraintEnd_toStartOf="@+id/btn_open_file"
             app:layout_constraintStart_toEndOf="@id/label_request_file"
@@ -215,6 +222,7 @@
             android:layout_height="wrap_content"
             tools:text="200"
             android:layout_marginStart="4dp"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/label_response_code"
             app:layout_constraintTop_toTopOf="@id/label_response_code" />
 
@@ -233,6 +241,7 @@
             android:layout_height="wrap_content"
             tools:text="Key: X_API_VERSION Value: 1.0"
             android:layout_marginStart="4dp"
+            android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label_response_headers"
             app:layout_constraintTop_toTopOf="@id/label_response_headers" />
@@ -253,6 +262,7 @@
             tools:text="Body value"
             android:layout_marginStart="4dp"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textIsSelectable="true"
             app:layout_constraintStart_toEndOf="@id/label_response_body"
             app:layout_constraintTop_toTopOf="@id/label_response_body" />
 
@@ -271,6 +281,7 @@
             android:layout_height="wrap_content"
             tools:text="N/A"
             android:layout_marginStart="4dp"
+            android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label_response_error"
             app:layout_constraintTop_toTopOf="@id/label_response_error" />
@@ -289,6 +300,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="450 ms"
+            android:textIsSelectable="true"
             android:layout_marginStart="4dp"
             app:layout_constraintStart_toEndOf="@id/label_execution_time"
             app:layout_constraintTop_toTopOf="@id/label_execution_time" />

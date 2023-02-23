@@ -13,3 +13,11 @@ fun <K, V> Map<K, V>.toPrettyString(): String {
     stringBuilder.append("}")
     return stringBuilder.toString()
 }
+
+fun String.toMap() : Map<String?, String>? = // Get Map of key/value pairs from a string where each line is a pair and each pair is separated by a space
+    if (isNotEmpty()) split("\n").associate {
+        if (it.contains(" ")) {
+            val (key, value) = it.split(" ", limit = 2)
+            key to value
+        } else it to ""
+    } else null
