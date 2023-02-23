@@ -17,8 +17,7 @@ import com.khaled.apitester.R
 import com.khaled.apitester.databinding.ActivityAddNewApiCallBinding
 import com.khaled.apitester.screen.details.ApiCallDetailsActivity
 import com.khaled.apitester.screen.main.MainActivity.Companion.IS_API_CALL_ADDED
-import com.khaled.apitester.util.extension.ContextExtensions.getFileNameFromUri
-import com.khaled.apitester.util.extension.ContextExtensions.makeFileFromUri
+import com.khaled.apitester.util.extension.makeFileFromUri
 
 
 class AddNewApiCallActivity : AppCompatActivity() {
@@ -30,7 +29,7 @@ class AddNewApiCallActivity : AppCompatActivity() {
     private val getFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             val file = makeFileFromUri(uri)
-            binding.labelFile.text = "File: ${getFileNameFromUri(it)}"
+            binding.labelFile.text = "File: ${file.name}"
             viewModel.currentFile = file
         }
     }

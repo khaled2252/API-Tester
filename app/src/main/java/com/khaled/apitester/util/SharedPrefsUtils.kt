@@ -3,7 +3,8 @@ package com.khaled.apitester.util
 import android.content.Context
 import android.content.SharedPreferences
 import com.khaled.apitester.model.ApiCallModel
-import com.khaled.apitester.util.extension.JSONObjectExtensions.toMap
+import com.khaled.apitester.util.extension.toMap
+import com.khaled.apitester.util.extension.toNullIfBlank
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -77,16 +78,17 @@ class SharedPrefsUtils(context: Context) {
                     HttpUtils.HttpMethod.valueOf(jsonObject.getString("requestMethod"))
                 val requestHeaders =
                     jsonObject.optJSONObject("requestHeaders")?.toMap() as Map<String?, String>?
-                val requestBody = jsonObject.optString("requestBody", null.toString())
-                val requestFile = File(jsonObject.optString("requestFile", null.toString()))
+                val requestBody = jsonObject.optString("requestBody")
+                val requestFileString = jsonObject.optString("requestFile").toNullIfBlank()
+                val requestFile = if (requestFileString == null) null else File(requestFileString)
                 val requestQueries =
                     jsonObject.optJSONObject("requestQueries")?.toMap() as Map<String?, String>?
                 val responseCode = jsonObject.optInt("responseCode", -1).takeIf { it != -1 }
-                val responseMessage = jsonObject.optString("responseMessage", null.toString())
+                val responseMessage = jsonObject.optString("responseMessage")
                 val responseHeaders = jsonObject.optJSONObject("responseHeaders")
                     ?.toMap() as Map<String?, List<String>>?
-                val responseBody = jsonObject.optString("responseBody", null.toString())
-                val responseError = jsonObject.optString("responseError", null.toString())
+                val responseBody = jsonObject.optString("responseBody")
+                val responseError = jsonObject.optString("responseError")
                 val executionTime = jsonObject.optLong("executionTime", 0L)
 
                 val apiCall = ApiCallModel(

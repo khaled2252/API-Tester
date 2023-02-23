@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.khaled.apitester.model.ApiCallModel
 import com.khaled.apitester.util.BackgroundTaskUtils.doInBackground
 import com.khaled.apitester.util.HttpUtils
-import com.khaled.apitester.util.extension.ContextExtensions.isNetworkAvailable
 import com.khaled.apitester.util.SharedPrefsUtils
+import com.khaled.apitester.util.extension.isNetworkAvailable
 import java.io.File
 
 // Using AndroidViewModel to access application context to check for internet connection and access SharedPreferences
