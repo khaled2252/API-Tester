@@ -3,7 +3,7 @@ package com.khaled.apitester.util
 import android.content.Context
 import android.content.SharedPreferences
 import com.khaled.apitester.model.ApiCallModel
-import com.khaled.apitester.util.JSONObjectExtensions.toMap
+import com.khaled.apitester.util.extension.JSONObjectExtensions.toMap
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -12,7 +12,7 @@ class SharedPrefsUtils(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("my_app_preferences", Context.MODE_PRIVATE)
 
-    fun saveApiCallModel(apiCallModel: ApiCallModel) {
+    fun addApiCallModel(apiCallModel: ApiCallModel) {
         val json = JSONObject()
         json.put("dateInMillis", apiCallModel.dateInMillis)
         json.put("requestUrl", apiCallModel.requestUrl)
@@ -77,7 +77,7 @@ class SharedPrefsUtils(context: Context) {
                     HttpUtils.HttpMethod.valueOf(jsonObject.getString("requestMethod"))
                 val requestHeaders =
                     jsonObject.optJSONObject("requestHeaders")?.toMap() as Map<String?, String>?
-                val requestBody = jsonObject.optJSONObject("requestBody")
+                val requestBody = jsonObject.optString("requestBody", null.toString())
                 val requestFile = File(jsonObject.optString("requestFile", null.toString()))
                 val requestQueries =
                     jsonObject.optJSONObject("requestQueries")?.toMap() as Map<String?, String>?
@@ -87,7 +87,7 @@ class SharedPrefsUtils(context: Context) {
                     ?.toMap() as Map<String?, List<String>>?
                 val responseBody = jsonObject.optString("responseBody", null.toString())
                 val responseError = jsonObject.optString("responseError", null.toString())
-                val executionTime = jsonObject.getLong("executionTime")
+                val executionTime = jsonObject.optLong("executionTime", 0L)
 
                 val apiCall = ApiCallModel(
                     dateInMillis,
@@ -111,6 +111,15 @@ class SharedPrefsUtils(context: Context) {
         } else {
             return emptyList()
         }
+    }
+
+    fun getApiCallModel(apiCallModelDateIdentifier: Long): ApiCallModel? {
+        getPreviousApiCalls().forEach {
+            if (it.dateInMillis == apiCallModelDateIdentifier) {
+                return it
+            }
+        }
+        return null
     }
 
 }

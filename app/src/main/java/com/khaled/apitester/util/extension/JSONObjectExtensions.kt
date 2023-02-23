@@ -1,4 +1,4 @@
-package com.khaled.apitester.util
+package com.khaled.apitester.util.extension
 
 import org.json.JSONArray
 import org.json.JSONObject

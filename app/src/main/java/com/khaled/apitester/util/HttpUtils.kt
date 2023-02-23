@@ -2,7 +2,6 @@ package com.khaled.apitester.util
 
 import android.util.Log
 import com.khaled.apitester.model.ApiCallModel
-import org.json.JSONObject
 import java.io.*
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -14,7 +13,7 @@ object HttpUtils {
         method: HttpMethod,
         url: String,
         headers: Map<String?, String>? = null,
-        body: JSONObject? = null,
+        body: String? = null,
         file: File? = null,
         onResponse: (ApiCallModel) -> Unit
     ) {

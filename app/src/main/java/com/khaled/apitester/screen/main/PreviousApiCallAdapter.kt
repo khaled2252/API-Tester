@@ -55,7 +55,7 @@ class PreviousApiCallAdapter (private val onItemClicked: (ApiCallModel) -> Unit)
         @SuppressLint("SetTextI18n")
         fun bind(model: ApiCallModel) {
             with(binding){
-                tvUrl.text = model.requestUrl
+                tvUrl.text = model.requestUrl.trim()
                 val dateFormatted = SimpleDateFormat("M/d/yyyy h:mm:ss a", Locale.ENGLISH).format(Date(model.dateInMillis))
                 tvDate.text = dateFormatted
                 tvExecutionTime.text = model.executionTime.toString() + " ms"

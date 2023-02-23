@@ -1,16 +1,21 @@
 package com.khaled.apitester.screen.main
 
 import android.app.Dialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.khaled.apitester.R
-import com.khaled.apitester.model.ApiCallModel
 import com.khaled.apitester.databinding.ActivityMainBinding
 import com.khaled.apitester.databinding.DialogSortingBinding
+import com.khaled.apitester.model.ApiCallModel
+import com.khaled.apitester.screen.add.AddNewApiCallActivity
+import com.khaled.apitester.screen.details.ApiCallDetailsActivity
+import com.khaled.apitester.screen.details.ApiCallDetailsActivity.Companion.API_CALL_MODEL_DATE_IDENTIFIER
 
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +23,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private val adapter = PreviousApiCallAdapter(::onPreviousApiCallItemClicked)
+    private val addNewApiCallActivityLauncher = registerForActivityResult(object : ActivityResultContract<Unit, Boolean>() {
+        override fun createIntent(context: Context, input: Unit): Intent {
+            return Intent(context, AddNewApiCallActivity::class.java)
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
+            return intent?.getBooleanExtra(IS_API_CALL_ADDED, false) ?: false
+        }
+
+    }) { isApiCallAdded ->
+        if (isApiCallAdded)
+            getPreviousApiCalls()
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,42 +46,37 @@ class MainActivity : AppCompatActivity() {
         )[MainViewModel::class.java]
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         with(binding) {
             rvPreviousCalls.adapter = adapter
             btnSort.setOnClickListener { showSortDialog() }
             btnNewApiCall.setOnClickListener {
-                viewModel.addData().observe(this@MainActivity) { newList ->
-                    if (newList == null)
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Please check your internet connection and try again",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    else if (newList.isNotEmpty()) {
-                        adapter.submitList(newList)
-                        rvPreviousCalls.smoothScrollToPosition(0)
-                        labelNoPreviousCalls.visibility = android.view.View.GONE
-                    } else
-                        labelNoPreviousCalls.visibility = android.view.View.VISIBLE
-                }
-            }
-            viewModel.getData().observe(this@MainActivity) { currentList ->
-                if (currentList.isNotEmpty()) {
-                    adapter.submitList(currentList)
-                    labelNoPreviousCalls.visibility = android.view.View.GONE
-                } else
-                    labelNoPreviousCalls.visibility = android.view.View.VISIBLE
+                addNewApiCallActivityLauncher.launch(Unit)
             }
             viewModel.selectedSort.observe(this@MainActivity){ sortOption ->
                 adapter.sortBy(sortOption)
                 Handler(Looper.getMainLooper()).postDelayed({ rvPreviousCalls.smoothScrollToPosition(0) }, 300)
             }
+
+            getPreviousApiCalls()
+        }
+
+    }
+
+    private fun getPreviousApiCalls(){
+        viewModel.getData().observe(this) { currentList ->
+            if (currentList.isNotEmpty()) {
+                adapter.submitList(currentList)
+                Handler(Looper.getMainLooper()).postDelayed({ binding.rvPreviousCalls.smoothScrollToPosition(0) }, 300)
+                binding.labelNoPreviousCalls.visibility = android.view.View.GONE
+            } else
+                binding.labelNoPreviousCalls.visibility = android.view.View.VISIBLE
         }
     }
 
     private fun onPreviousApiCallItemClicked(apiCallModel: ApiCallModel) {
-        // Todo: Navigate to Api call details screen
+        startActivity(Intent(this, ApiCallDetailsActivity::class.java).apply {
+            putExtra(API_CALL_MODEL_DATE_IDENTIFIER, apiCallModel.dateInMillis)
+        })
     }
 
     private fun showSortDialog() {
@@ -108,5 +122,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    companion object {
+        const val IS_API_CALL_ADDED = "IS_API_CALL_ADDED"
     }
 }
