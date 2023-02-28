@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     }) { isApiCallAdded ->
         if (isApiCallAdded)
-            getPreviousApiCalls()
+            viewModel.getPreviousApiCalls()
 
     }
 
@@ -46,24 +46,24 @@ class MainActivity : AppCompatActivity() {
         )[MainViewModel::class.java]
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        observeViewModel()
+        setListeners()
+
+        viewModel.getPreviousApiCalls()
+    }
+
+    private fun setListeners() {
         with(binding) {
             rvPreviousCalls.adapter = adapter
             btnSort.setOnClickListener { showSortDialog() }
             btnNewApiCall.setOnClickListener {
                 addNewApiCallActivityLauncher.launch(Unit)
             }
-            viewModel.selectedSort.observe(this@MainActivity){ sortOption ->
-                adapter.sortBy(sortOption)
-                Handler(Looper.getMainLooper()).postDelayed({ rvPreviousCalls.smoothScrollToPosition(0) }, 300)
-            }
-
-            getPreviousApiCalls()
         }
-
     }
 
-    private fun getPreviousApiCalls(){
-        viewModel.getData().observe(this) { currentList ->
+    private fun observeViewModel() {
+        viewModel.dataListLiveData.observe(this) { currentList ->
             if (currentList.isNotEmpty()) {
                 adapter.submitList(currentList)
                 Handler(Looper.getMainLooper()).postDelayed({ binding.rvPreviousCalls.smoothScrollToPosition(0) }, 300)
@@ -71,6 +71,12 @@ class MainActivity : AppCompatActivity() {
             } else
                 binding.labelNoPreviousCalls.visibility = android.view.View.VISIBLE
         }
+
+        viewModel.selectedSortLiveData.observe(this@MainActivity){ sortOption ->
+            adapter.sortBy(sortOption)
+            Handler(Looper.getMainLooper()).postDelayed({ binding.rvPreviousCalls.smoothScrollToPosition(0) }, 300)
+        }
+
     }
 
     private fun onPreviousApiCallItemClicked(apiCallModel: ApiCallModel) {
@@ -87,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         with(binding){
             btnDismiss.setOnClickListener { dialog.dismiss() }
             fun getSortOptionButtonId(): Int {
-                return when (viewModel.selectedSort.value) {
+                return when (viewModel.selectedSortLiveData.value) {
                     MainViewModel.SortOption.DATE -> R.id.radio_button_date
                     MainViewModel.SortOption.EXECUTION_TIME_ASCENDING -> R.id.radio_button_execution_time_asc
                     MainViewModel.SortOption.EXECUTION_TIME_DESCENDING -> R.id.radio_button_execution_time_desc

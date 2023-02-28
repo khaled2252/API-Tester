@@ -40,6 +40,7 @@ class AddNewApiCallActivity : AppCompatActivity() {
         )[AddNewApiCallViewModel::class.java]
         binding = ActivityAddNewApiCallBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        observeViewModel()
 
         with(binding) {
             radioGroupRequestType.setOnCheckedChangeListener { _, checkedId ->
@@ -70,11 +71,15 @@ class AddNewApiCallActivity : AppCompatActivity() {
                     editTextHeaders.text.toString(),
                     editTextJsonBody.text.toString(),
                     isJson = radioGroupBodyType.checkedRadioButtonId == R.id.radio_button_json
-                ).observe(this@AddNewApiCallActivity) { state ->
-                    handleRequestState(state)
-                }
+                )
 
             }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.requestLiveData.observe(this) { state ->
+            handleRequestState(state)
         }
     }
 

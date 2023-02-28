@@ -3,6 +3,7 @@ package com.khaled.apitester.screen.add
 import android.app.Application
 import android.webkit.URLUtil.isValidUrl
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.khaled.apitester.model.ApiCallModel
 import com.khaled.apitester.util.BackgroundTaskUtils.doInBackground
@@ -17,17 +18,19 @@ class AddNewApiCallViewModel(private val app: Application) : AndroidViewModel(ap
 
     var currentFile: File? = null
 
+    private val _requestLiveData = MutableLiveData<ViewState>()
+    internal val requestLiveData: LiveData<ViewState> = _requestLiveData
+
     fun makeARequest(
         method: HttpUtils.HttpMethod,
         url: String,
         headers: String,
         body: String?,
         isJson: Boolean
-    ) =
-        MutableLiveData<ViewState>().apply {
+    ) {
             if (app.applicationContext.isNetworkAvailable()) {
                 if (isValidUrl(url)) {
-                    value = ViewState.Loading
+                    _requestLiveData.value = ViewState.Loading
                     var result: ApiCallModel? = null
                     doInBackground(
                         task = {
@@ -45,12 +48,12 @@ class AddNewApiCallViewModel(private val app: Application) : AndroidViewModel(ap
                             }
                         },
                         onDone = {
-                            value = result?.let { ViewState.Finished(it) }
+                            _requestLiveData.value = result?.let { ViewState.Finished(it) }
                         })
                 } else
-                    value = ViewState.InvalidUrl
+                    _requestLiveData.value = ViewState.InvalidUrl
             } else
-                value = ViewState.NoInternet
+                _requestLiveData.value = ViewState.NoInternet
         }
 
     sealed class ViewState {

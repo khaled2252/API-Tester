@@ -11,22 +11,25 @@ import com.khaled.apitester.util.SharedPrefsUtils
 // Using AndroidViewModel to access application context to access SharedPreferences
 class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    private val _selectedSort = MutableLiveData(SortOption.DATE)
-    internal val selectedSort: LiveData<SortOption> = _selectedSort
+    private val _selectedSortLiveData = MutableLiveData(SortOption.DATE)
+    internal val selectedSortLiveData: LiveData<SortOption> = _selectedSortLiveData
 
-    fun getData() = MutableLiveData<List<ApiCallModel>>().apply {
+    private val _dataListLiveData = MutableLiveData<List<ApiCallModel>>()
+    internal val dataListLiveData: LiveData<List<ApiCallModel>> = _dataListLiveData
+
+    fun getPreviousApiCalls() {
         var newList: List<ApiCallModel> = emptyList()
         doInBackground(
             task = {
                 newList = SharedPrefsUtils(app.applicationContext).getPreviousApiCalls()
             },
             onDone = {
-                value = newList
+                _dataListLiveData.value = newList
             })
     }
 
     fun setNewSort(newSortOption: SortOption) {
-        _selectedSort.value = newSortOption
+        _selectedSortLiveData.value = newSortOption
     }
 
     enum class SortOption {
