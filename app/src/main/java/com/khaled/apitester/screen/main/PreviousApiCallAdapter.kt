@@ -38,18 +38,6 @@ class PreviousApiCallAdapter (private val onItemClicked: (ApiCallModel) -> Unit)
         holder.bind(item)
     }
 
-    fun sortBy(sortOption: MainViewModel.SortOption) {
-        when(sortOption){
-            MainViewModel.SortOption.DATE -> submitList(currentList.sortedByDescending { it.dateInMillis })
-            MainViewModel.SortOption.EXECUTION_TIME_ASCENDING -> submitList(currentList.sortedBy { it.executionTime })
-            MainViewModel.SortOption.EXECUTION_TIME_DESCENDING -> submitList(currentList.sortedByDescending { it.executionTime })
-            MainViewModel.SortOption.GET_REQUESTS -> submitList(currentList.sortedByDescending { it.requestMethod == HttpUtils.HttpMethod.GET })
-            MainViewModel.SortOption.POST_REQUESTS -> submitList(currentList.sortedByDescending { it.requestMethod == HttpUtils.HttpMethod.POST })
-            MainViewModel.SortOption.SUCCESS_REQUESTS -> submitList(currentList.sortedByDescending { (it.responseCode?.div(100) ?: 200) == 2 })
-            MainViewModel.SortOption.FAILURE_REQUESTS -> submitList(currentList.sortedByDescending { (it.responseCode?.div(100) ?: 200) != 2 })
-        }
-    }
-
     inner class ViewHolderPreviousApiCallViewHolder(private val binding: ViewHolderPreviousApiCallBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")

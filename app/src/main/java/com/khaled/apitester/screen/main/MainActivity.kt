@@ -71,12 +71,6 @@ class MainActivity : AppCompatActivity() {
             } else
                 binding.labelNoPreviousCalls.visibility = android.view.View.VISIBLE
         }
-
-        viewModel.selectedSortLiveData.observe(this@MainActivity){ sortOption ->
-            adapter.sortBy(sortOption)
-            Handler(Looper.getMainLooper()).postDelayed({ binding.rvPreviousCalls.smoothScrollToPosition(0) }, 300)
-        }
-
     }
 
     private fun onPreviousApiCallItemClicked(apiCallModel: ApiCallModel) {
@@ -93,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         with(binding){
             btnDismiss.setOnClickListener { dialog.dismiss() }
             fun getSortOptionButtonId(): Int {
-                return when (viewModel.selectedSortLiveData.value) {
+                return when (viewModel.selectedSort) {
                     MainViewModel.SortOption.DATE -> R.id.radio_button_date
                     MainViewModel.SortOption.EXECUTION_TIME_ASCENDING -> R.id.radio_button_execution_time_asc
                     MainViewModel.SortOption.EXECUTION_TIME_DESCENDING -> R.id.radio_button_execution_time_desc
@@ -101,7 +95,6 @@ class MainActivity : AppCompatActivity() {
                     MainViewModel.SortOption.POST_REQUESTS -> R.id.radio_button_post_requests
                     MainViewModel.SortOption.SUCCESS_REQUESTS -> R.id.radio_button_success_requests
                     MainViewModel.SortOption.FAILURE_REQUESTS -> R.id.radio_button_failure_requests
-                    else -> return -1
                 }
             }
 
@@ -122,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
             radioGroupSortOptions.setOnCheckedChangeListener { _, checkedId ->
                 val newSortOption = getSortOptionFromButtonId(checkedId)
-                viewModel.setNewSort(newSortOption)
+                viewModel.applyNewSort(newSortOption)
                 dialog.dismiss()
             }
         }
